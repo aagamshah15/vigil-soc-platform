@@ -7,9 +7,10 @@ from typing import Any, Generator, Optional
 from fastapi import Depends, FastAPI, HTTPException, Query, Request, WebSocket
 from fastapi.responses import JSONResponse
 from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from .auth_router import router as auth_router
-from .config import API_CORS_ORIGINS, APP_NAME, APP_VERSION, MAX_STREAM_LAG_MINUTES
+from .config import API_CORS_ORIGINS, API_TRUSTED_HOSTS, APP_NAME, APP_VERSION, MAX_STREAM_LAG_MINUTES
 from .db import get_conn
 from .incident_router import router as incident_router
 from .metrics import REQUEST_COUNT, REQUEST_LATENCY, prometheus_response, update_pipeline_metrics, update_soc_metrics
@@ -32,6 +33,7 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PATCH", "OPTIONS"],
     allow_headers=["content-type", "x-api-key", "authorization", "if-match"],
 )
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=API_TRUSTED_HOSTS)
 
 app.include_router(auth_router)
 app.include_router(incident_router)

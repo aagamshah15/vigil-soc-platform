@@ -86,6 +86,7 @@ PRODUCTION_MODE=true
 JWT_SECRET=<strong value from openssl rand -hex 32>
 COOKIE_SECURE=true
 API_CORS_ORIGINS=https://your-ui.example.com
+API_TRUSTED_HOSTS=localhost,127.0.0.1,api,your-api.example.com
 SEED_DEMO_USERS=false
 ```
 
@@ -303,6 +304,7 @@ Important settings:
 | `COOKIE_SECURE` | `false` | Set true behind HTTPS |
 | `SEED_DEMO_USERS` | `true` | Seeds local demo users during auth init |
 | `API_CORS_ORIGINS` | localhost origins | Comma-separated allowed UI origins |
+| `API_TRUSTED_HOSTS` | local/demo hosts | Comma-separated allowed HTTP Host values |
 | `SOC_TOPIC` | `security.events` | SOC Redpanda topic |
 | `SOC_SCENARIO` | `financial_attack_chain` | Synthetic SOC scenario |
 | `GITHUB_TOKEN` | unset | Optional for live GitHub producer |

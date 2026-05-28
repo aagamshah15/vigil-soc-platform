@@ -26,6 +26,11 @@ API_CORS_ORIGINS = [
     for origin in os.getenv("API_CORS_ORIGINS", "http://localhost:5173,http://localhost:8600").split(",")
     if origin.strip()
 ]
+API_TRUSTED_HOSTS = [
+    host.strip()
+    for host in os.getenv("API_TRUSTED_HOSTS", "localhost,127.0.0.1,api,testserver").split(",")
+    if host.strip()
+]
 
 # ──────────────────────────────────────────────────────────────────────────────
 # JWT / Auth  (Phase 7A)
@@ -96,3 +101,9 @@ def validate_secrets() -> None:
                 "allow_credentials=True.  Browsers reject this combination and it "
                 "creates a CSRF surface.  Use explicit origin(s) instead."
             )
+
+    if any(host == "*" for host in API_TRUSTED_HOSTS):
+        raise RuntimeError(
+            "CRITICAL: API_TRUSTED_HOSTS contains '*' (wildcard). Use explicit hosts "
+            "such as localhost, 127.0.0.1, your API hostname, or your reverse proxy host."
+        )
