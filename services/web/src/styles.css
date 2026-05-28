@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #0d1117;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+@layer components {
+  .panel {
+    @apply rounded-md border border-[#30363d] bg-[#161b22]/95 shadow-panel;
+  }
+
+  .section-label {
+    @apply text-xs font-semibold uppercase tracking-wide text-zinc-500;
+  }
+
+  .nav-button {
+    @apply flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm text-zinc-400 transition hover:bg-zinc-900 hover:text-zinc-100;
+  }
+
+  .nav-button-active {
+    @apply border border-cyan-400/30 bg-cyan-500/15 text-cyan-100 hover:bg-cyan-500/20 hover:text-cyan-50;
+  }
+
+  .mobile-tab {
+    @apply inline-flex shrink-0 items-center gap-2 rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-400;
+  }
+
+  .mobile-tab-active {
+    @apply border-zinc-200 bg-zinc-100 text-zinc-950;
+  }
+
+  .command-button {
+    @apply inline-flex items-center justify-center gap-2 rounded-md border border-cyan-400/30 bg-cyan-400 px-3 py-2 text-sm font-medium text-zinc-950 transition hover:bg-cyan-300;
+  }
+
+  .command-button-disabled {
+    @apply inline-flex cursor-not-allowed items-center justify-center gap-2 rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm font-medium text-zinc-500;
+  }
+
+  .icon-button {
+    @apply inline-flex h-7 w-7 items-center justify-center rounded-md text-zinc-400 transition hover:bg-zinc-800 hover:text-zinc-100;
+  }
+
+  .reason-chip {
+    @apply inline-flex items-center rounded-md border border-zinc-700 bg-zinc-950/70 px-2.5 py-1.5 text-xs leading-5 text-zinc-300;
+  }
+
+  .data-table {
+    @apply min-w-full border-separate border-spacing-0 text-left text-sm;
+  }
+
+  .data-table th {
+    @apply border-b border-zinc-800 bg-zinc-950/70 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-zinc-500;
+  }
+
+  .data-table td {
+    @apply border-b border-zinc-800 px-3 py-3 align-top text-zinc-300;
+  }
+}

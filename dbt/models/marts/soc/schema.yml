@@ -1,0 +1,53 @@
+version: 2
+
+models:
+  - name: mart_soc_risk_events
+    description: "One row per explainable SOC risk rule fired by an event."
+    columns:
+      - name: event_id
+        tests: [not_null]
+      - name: rule_name
+        tests: [not_null]
+      - name: risk_points
+        tests: [not_null]
+      - name: reason
+        tests: [not_null]
+
+  - name: mart_soc_entity_risk_current
+    description: "Current ranked SOC entity risk with score, band, reasons, and analyst action."
+    columns:
+      - name: entity_id
+        tests: [unique, not_null]
+      - name: risk_score
+        tests: [not_null]
+      - name: risk_band
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["low", "medium", "high", "critical"]
+      - name: recommended_action
+        tests: [not_null]
+
+  - name: mart_soc_incident_timelines
+    description: "Auto-constructed SOC incident timelines grouped by incident_id."
+    columns:
+      - name: incident_id
+        tests: [unique, not_null]
+      - name: severity
+        tests: [not_null]
+      - name: timeline
+        tests: [not_null]
+
+  - name: mart_soc_qna_results
+    description: "Deterministic template Q&A results for common analyst questions."
+    columns:
+      - name: question_id
+        tests: [unique, not_null]
+
+  - name: mart_soc_compliance_evidence
+    description: "PCI-DSS and SOC 2 audit evidence generated from SOC events."
+    columns:
+      - name: framework
+        tests: [not_null]
+      - name: control_id
+        tests: [not_null]

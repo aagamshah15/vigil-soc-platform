@@ -1,0 +1,67 @@
+# Phase 8A: Live data — GitHub activity + Threat Intel IOC enrichment
+#
+# Adds two producers:
+#   threat-intel-producer  — polls OTX, ThreatFox, Feodo Tracker → raw.iocs
+#   github-producer        — polls GitHub Events API → Kafka security.events
+#
+# Run via `make demo-up` (which includes all phase overlays), or manually:
+#   docker compose \
+#     -f docker-compose.yml \
+#     ... (phase 2-7 overlays) \
+#     -f infra/soc/docker-compose.phase8.yml \
+#     up -d
+#
+# Migration required (for already-running postgres):
+#   docker exec -i <postgres_container> psql -U app -d threat_risk \
+#     < sql/init/007_ioc_schema.sql
+
+services:
+  # ── Threat Intel Producer ───────────────────────────────────────────────────
+  # Fetches IOC feeds (OTX / ThreatFox / Feodo) and upserts into raw.iocs.
+  # Writes directly to PostgreSQL — not via Kafka (reference data, not events).
+  threat-intel-producer:
+    build:
+      context: ./services/threat_intel_producer
+    platform: linux/arm64
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      OTX_API_KEY: ${OTX_API_KEY}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      # Poll every 15 min by default; set shorter for demo (e.g. 300)
+      INTEL_LOOP_SECONDS: ${INTEL_LOOP_SECONDS:-900}
+    restart: unless-stopped
+
+  # ── GitHub Events Producer ──────────────────────────────────────────────────
+  # Polls GitHub Events API and publishes mapped SOC events to Kafka.
+  # Events flow: GitHub API → Kafka security.events → soc-consumer → raw.security_events → dbt
+  github-producer:
+    build:
+      context: ./services/github_producer
+    platform: linux/arm64
+    depends_on:
+      redpanda:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    environment:
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      GITHUB_USERNAME: ${GITHUB_USERNAME}
+      BOOTSTRAP_SERVERS: redpanda:9092
+      SOC_TOPIC: security.events
+      GITHUB_POLL_SECONDS: ${GITHUB_POLL_SECONDS:-60}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    restart: unless-stopped
+
+  dashboard:
+    environment:
+      DASHBOARD_PHASE_LABEL: "Phase 8A: Live GitHub + Threat Intel"

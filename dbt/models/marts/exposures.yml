@@ -1,0 +1,59 @@
+version: 2
+
+exposures:
+  - name: threat_risk_api
+    label: Threat & Risk API
+    type: application
+    maturity: medium
+    url: http://localhost:8000/docs
+    description: "FastAPI service that exposes curated KEV and URLhaus mart data for local applications and demos."
+    depends_on:
+      - ref('fact_kev')
+      - ref('fct_urlhaus_threat_events')
+      - ref('dim_product')
+    owner:
+      name: Threat Risk Platform
+      email: local@example.com
+
+  - name: threat_risk_dashboard
+    label: Threat & Risk Dashboard
+    type: dashboard
+    maturity: medium
+    url: http://localhost:8501
+    description: "Streamlit dashboard for recruiter-friendly monitoring of threat trends, KEV risk, and ingestion freshness."
+    depends_on:
+      - ref('fact_kev')
+      - ref('fct_urlhaus_threat_events')
+      - ref('fact_url_events')
+    owner:
+      name: Threat Risk Platform
+      email: local@example.com
+
+  - name: soc_threat_correlation_api
+    label: SOC Threat Correlation API
+    type: application
+    maturity: medium
+    url: http://localhost:8000/docs
+    description: "FastAPI endpoints for ranked SOC entity risk, incident timelines, analyst Q&A, triage reports, and compliance evidence."
+    depends_on:
+      - ref('mart_soc_entity_risk_current')
+      - ref('mart_soc_incident_timelines')
+      - ref('mart_soc_qna_results')
+      - ref('mart_soc_compliance_evidence')
+    owner:
+      name: Threat Risk Platform
+      email: local@example.com
+
+  - name: soc_threat_correlation_dashboard
+    label: SOC Threat Correlation Dashboard
+    type: dashboard
+    maturity: medium
+    url: http://localhost:8501
+    description: "Streamlit dashboard showing critical SOC entities, attack chains, deterministic Q&A, triage reports, and audit evidence."
+    depends_on:
+      - ref('mart_soc_entity_risk_current')
+      - ref('mart_soc_incident_timelines')
+      - ref('mart_soc_compliance_evidence')
+    owner:
+      name: Threat Risk Platform
+      email: local@example.com

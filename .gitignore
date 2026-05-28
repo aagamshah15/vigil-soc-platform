@@ -24,6 +24,11 @@ __pycache__/
 .venv/
 venv/
 
+# Frontend
+node_modules/
+dist/
+*.tsbuildinfo
+
 # dbt
 dbt/target/
 dbt/logs/
@@ -31,7 +36,13 @@ dbt/logs/
 # Docker
 *.log
 artifacts/p3_runs/
+backups/
+secrets/
 
 # IDE
 .vscode/
 .idea/
+
+# Local assistant/session artifacts
+.Rhistory
+.claude/

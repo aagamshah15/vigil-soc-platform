@@ -2,41 +2,75 @@ version: 2
 
 models:
   - name: dim_vendor
+    description: "Deduplicated vendor/project dimension sourced from CISA KEV records."
     columns:
       - name: vendor_key
+        description: "Stable hash key for the vendor/project."
         tests: [unique, not_null]
       - name: vendor_project
+        description: "Normalized vendor or open-source project name from the source feed."
         tests: [unique, not_null]
 
   - name: dim_product
+    description: "Product dimension used to group KEV vulnerabilities by affected technology."
     columns:
       - name: product_key
+        description: "Stable hash key for a vendor and product pair."
         tests: [unique, not_null]
       - name: vendor_key
+        description: "Foreign key to dim_vendor."
         tests: [not_null]
       - name: vendor_project
+        description: "Vendor or project name associated with the product."
         tests: [not_null]
       - name: product
+        description: "Affected product name from the KEV catalog."
         tests: [not_null]
 
   - name: dim_url
+    description: "Deduplicated malicious URL dimension from URLhaus batch observations."
     columns:
       - name: url_key
+        description: "Stable hash key for the URL."
         tests: [unique, not_null]
       - name: url
+        description: "Observed malicious URL."
         tests: [unique, not_null]
 
   - name: fact_kev
+    description: "Curated CISA Known Exploited Vulnerability fact table for risk summaries and vendor/product analytics."
     columns:
+      - name: cve_key
+        description: "Stable hash key for the CVE."
+      - name: product_key
+        description: "Foreign key to dim_product."
       - name: cve_id
+        description: "CVE identifier."
         tests: [not_null]
       - name: date_day
+        description: "Batch run date associated with the KEV record."
         tests: [not_null]
+      - name: vulnerability_name
+        description: "Source-provided vulnerability name."
+      - name: date_added
+        description: "Date CISA added the CVE to the KEV catalog."
+      - name: due_date
+        description: "CISA remediation due date when available."
+      - name: required_action
+        description: "Recommended or mandated remediation action from the KEV feed."
 
   - name: fact_url_events
+    description: "Curated URLhaus batch URL observations for historical threat activity analysis."
     columns:
       - name: url_key
+        description: "Foreign key to dim_url."
         tests: [not_null]
       - name: date_day
+        description: "Batch run date associated with the URL observation."
         tests: [not_null]
-
+      - name: url_status
+        description: "URLhaus status such as online or offline."
+      - name: threat
+        description: "Threat classification from URLhaus."
+      - name: tags
+        description: "Source-provided URLhaus tags."

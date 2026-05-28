@@ -1,0 +1,55 @@
+services:
+  soc-consumer:
+    build:
+      context: ./services/soc_consumer
+    platform: linux/arm64
+    container_name: soc-consumer
+    depends_on:
+      redpanda:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      minio_init:
+        condition: service_completed_successfully
+    environment:
+      PYTHONUNBUFFERED: "1"
+      BOOTSTRAP_SERVERS: redpanda:9092
+      SOC_TOPIC: ${SOC_TOPIC:-security.events}
+      SOC_GROUP_ID: soc-risk-consumer
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET: ${MINIO_BUCKET}
+      SOC_MINIO_PREFIX: soc/security_events
+      SOC_EVENT_BATCH_SIZE: ${SOC_EVENT_BATCH_SIZE:-200}
+      SOC_BATCH_SECONDS: "2"
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    restart: unless-stopped
+
+  soc-producer:
+    build:
+      context: ./services/soc_producer
+    platform: linux/arm64
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    environment:
+      BOOTSTRAP_SERVERS: redpanda:9092
+      SOC_TOPIC: ${SOC_TOPIC:-security.events}
+      SOC_SCENARIO: ${SOC_SCENARIO:-financial_attack_chain}
+      # Re-emit events every N seconds so dashboard timestamps stay current.
+      # Each cycle upserts the same events with refreshed timestamps.
+      SOC_LOOP_SECONDS: ${SOC_LOOP_SECONDS:-300}
+    restart: unless-stopped
+
+  dashboard:
+    environment:
+      DASHBOARD_PHASE_LABEL: "Phase 6: SOC Threat Correlation + Risk Scoring"
+
+  api:
+    environment:
+      SOC_MIN_CRITICAL_SCORE: ${SOC_MIN_CRITICAL_SCORE:-80}

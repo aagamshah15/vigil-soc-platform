@@ -1,0 +1,81 @@
+# Phase 7A: Real-time WebSocket + JWT auth + Incident state management
+#
+# Extends the Phase 6 compose.  Run with:
+#   docker compose \
+#     -f docker-compose.yml \
+#     -f infra/consumption/docker-compose.phase4.yml \
+#     -f infra/monitoring/docker-compose.phase5.yml \
+#     -f infra/soc/docker-compose.phase6.yml \
+#     -f infra/soc/docker-compose.phase7.yml \
+#     up -d
+#
+# New SQL migrations (003-005) are applied automatically on first postgres
+# container start via docker-entrypoint-initdb.d ordering.  For an already-
+# running postgres container run the migrations manually:
+#   docker exec -i <postgres_container> psql -U app -d threat_risk \
+#     < sql/init/003_auth_schema.sql
+#   docker exec -i <postgres_container> psql -U app -d threat_risk \
+#     < sql/init/004_soc_state.sql
+#   docker exec -i <postgres_container> psql -U app -d threat_risk \
+#     < sql/init/005_notify_triggers.sql
+
+services:
+  postgres:
+    environment:
+      SEED_DEMO_USERS: ${SEED_DEMO_USERS:-true}
+
+  # ── Continuous dbt refresh ──────────────────────────────────────────────────
+  # Re-runs `dbt build --select tag:soc` on the same interval as the soc-producer
+  # so the API marts stay in sync with freshly upserted events.
+  dbt-refresh:
+    build:
+      context: ./dbt
+    platform: linux/arm64
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DBT_PROFILES_DIR: /app
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      # Run every N seconds — should match SOC_LOOP_SECONDS in soc-producer
+      DBT_REFRESH_SECONDS: ${DBT_REFRESH_SECONDS:-300}
+    working_dir: /app
+    volumes:
+      - ./dbt:/app
+    # Wrap dbt in a shell loop so it runs once immediately then repeats
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        while true; do
+          echo "[dbt-refresh] running dbt build --select tag:soc"
+          dbt build --select tag:soc --no-partial-parse
+          echo "[dbt-refresh] done, sleeping $${DBT_REFRESH_SECONDS}s"
+          sleep "$${DBT_REFRESH_SECONDS}"
+        done
+    restart: unless-stopped
+
+  api:
+    environment:
+      # JWT auth (set JWT_AUTH_ENABLED=true to enforce login on all SOC endpoints)
+      JWT_SECRET: ${JWT_SECRET:-CHANGE-ME-IN-PRODUCTION-use-openssl-rand-hex-32}
+      JWT_AUTH_ENABLED: ${JWT_AUTH_ENABLED:-false}
+      PRODUCTION_MODE: ${PRODUCTION_MODE:-false}
+      SEED_DEMO_USERS: ${SEED_DEMO_USERS:-true}
+      ACCESS_TOKEN_TTL_MINUTES: ${ACCESS_TOKEN_TTL_MINUTES:-15}
+      REFRESH_TOKEN_TTL_DAYS: ${REFRESH_TOKEN_TTL_DAYS:-7}
+      WS_TICKET_TTL_SECONDS: ${WS_TICKET_TTL_SECONDS:-30}
+      # WebSocket CORS — frontend must be listed here
+      API_CORS_ORIGINS: ${API_CORS_ORIGINS:-http://localhost:5173,http://localhost:8600}
+    # Expose WebSocket port (same 8000; WS upgrade is handled by uvicorn)
+    ports:
+      - "8000:8000"
+    # Relax read-only mode: asyncpg needs /tmp for its internal socket
+    read_only: false
+
+  dashboard:
+    environment:
+      DASHBOARD_PHASE_LABEL: "Phase 7A: Real-time WebSocket + JWT Auth"
