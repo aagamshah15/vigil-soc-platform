@@ -52,6 +52,8 @@ _LOCKOUT_SOFT_ATTEMPTS = 5      # → 5-minute lock
 _LOCKOUT_SOFT_MINUTES  = 5
 _LOCKOUT_HARD_ATTEMPTS = 10     # → 60-minute lock
 _LOCKOUT_HARD_MINUTES  = 60
+# OAuth token type literal from RFC 6750; not a credential.
+TOKEN_TYPE_BEARER = "bearer"  # nosec B105
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -333,7 +335,7 @@ def login(body: LoginRequest, response: Response) -> JSONResponse:
     AUTH_LOGIN_TOTAL.labels("success").inc()
     resp = JSONResponse({
         "access_token":      access_token,
-        "token_type":        "bearer",
+        "token_type":        TOKEN_TYPE_BEARER,
         "access_expires_at": access_expires_at.isoformat(),
         "refresh_expires_at": expires_at.isoformat(),
         "user": {
@@ -391,7 +393,7 @@ def refresh(
     AUTH_REFRESH_TOTAL.labels("success").inc()
     resp = JSONResponse({
         "access_token":      access_token,
-        "token_type":        "bearer",
+        "token_type":        TOKEN_TYPE_BEARER,
         "access_expires_at": access_expires_at.isoformat(),
         "refresh_expires_at": expires_at.isoformat(),
         "user": {
