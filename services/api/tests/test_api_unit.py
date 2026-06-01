@@ -293,6 +293,29 @@ def test_soc_websocket_requires_ticket_when_jwt_enabled(monkeypatch) -> None:
         assert exc.code == 4001
 
 
+def test_soc_websocket_rejects_without_api_key(monkeypatch) -> None:
+    """WebSocket must close 4001 when API_AUTH_ENABLED=true and no key supplied."""
+    monkeypatch.setenv("API_AUTH_ENABLED", "true")
+    monkeypatch.setenv("API_KEY", "test-secret-key")
+    client = TestClient(app)
+
+    try:
+        with client.websocket_connect("/v1/soc/stream"):
+            raise AssertionError("WebSocket opened without API key")
+    except WebSocketDisconnect as exc:
+        assert exc.code == 4001
+
+
+def test_soc_websocket_accepts_with_valid_api_key(monkeypatch) -> None:
+    """WebSocket must accept connection when correct api_key query param is provided."""
+    monkeypatch.setenv("API_AUTH_ENABLED", "true")
+    monkeypatch.setenv("API_KEY", "test-secret-key")
+    client = TestClient(app)
+
+    with client.websocket_connect("/v1/soc/stream?api_key=test-secret-key"):
+        pass  # connection accepted — no disconnect raised
+
+
 def test_vite_dev_origin_is_allowed_by_cors() -> None:
     client = TestClient(app)
     resp = client.options(

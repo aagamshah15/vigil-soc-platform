@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import secrets
 import time
+from hmac import compare_digest
 from typing import Any, Generator, Optional
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request, WebSocket
@@ -15,7 +16,7 @@ from .db import get_conn
 from .incident_router import router as incident_router
 from .metrics import REQUEST_COUNT, REQUEST_LATENCY, prometheus_response, update_pipeline_metrics, update_soc_metrics
 from .repository import AnalyticsRepository
-from .security import enforce_rate_limit, require_api_key, require_soc_auth
+from .security import auth_enabled, enforce_rate_limit, expected_api_key, require_api_key, require_soc_auth
 from .ws import manager as ws_manager
 from .ws import soc_stream_handler, ws_lifespan
 
@@ -108,8 +109,10 @@ async def soc_stream(
     Authentication
     ──────────────
     Pass a short-lived ticket obtained from GET /auth/ws-ticket as the
-    `?ticket=` query parameter.  When JWT_AUTH_ENABLED=false the ticket is
-    optional and any connection is accepted (dev/demo mode).
+    `?ticket=` query parameter.  When JWT_AUTH_ENABLED=false and
+    API_AUTH_ENABLED=true, pass the API key via ?api_key= (browser) or the
+    x-api-key header (server/CLI).  When both auth flags are false any
+    connection is accepted (dev/demo mode).
 
     The server validates the ticket against auth.ws_tickets, marks it as
     used, then upgrades the connection.  Subsequent messages from Postgres
@@ -127,6 +130,20 @@ async def soc_stream(
     {"type": "error",                 "detail": "..."}
     """
     from .config import JWT_AUTH_ENABLED
+
+    # API-key gate: when JWT auth is off, mirror the require_api_key fallback
+    # that every REST SOC endpoint applies via require_soc_auth.
+    # Browser WebSocket clients pass the key as ?api_key=; server/CLI clients
+    # may use the x-api-key header, matching the REST convention.
+    if not JWT_AUTH_ENABLED and auth_enabled():
+        _configured = expected_api_key()
+        _provided = (
+            websocket.headers.get("x-api-key", "")
+            or websocket.query_params.get("api_key", "")
+        )
+        if not (_configured and compare_digest(_provided, _configured)):
+            await websocket.close(code=4001, reason="unauthorized")
+            return
 
     if JWT_AUTH_ENABLED:
         if not ticket:
