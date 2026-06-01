@@ -2,16 +2,117 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Theme tokens ── */
 :root {
-  color-scheme: dark;
+  color-scheme: light;
   font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    "Outfit", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --login-right-bg:  #e8edf5;
+  --login-card-bg:   #ffffff;
+
+  --bg-app:          #f8fafc;
+  --bg-panel:        #ffffff;
+  --bg-elevated:     #f1f5f9;
+  --bg-input:        #f1f5f9;
+  --bg-subtle:       #e8eef6;
+  --bg-hover:        #e6f4f2;
+  --border-primary:  #e2e8f0;
+  --border-secondary:#cbd5e1;
+  --border-subtle:   #edf2f7;
+
+  --bg-stat-red:     #fef2f2;
+  --bg-stat-green:   #f0fdf4;
+  --bg-stat-amber:   #fffbeb;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --login-right-bg:  #080e16;
+  --login-card-bg:   transparent;
+
+  --bg-app:          #070c12;
+  --bg-panel:        #080e16;
+  --bg-elevated:     #0d1826;
+  --bg-input:        #07090f;
+  --bg-subtle:       #0d1520;
+  --bg-hover:        #0a1018;
+  --border-primary:  #111c2a;
+  --border-secondary:#151f2e;
+  --border-subtle:   #0d1520;
+
+  --bg-stat-red:     #130808;
+  --bg-stat-green:   #05120a;
+  --bg-stat-amber:   #120d03;
+}
+
+/* ── Vigil login animations ── */
+/* The login left panel is always dark, so .vigil-grid-bg is always on dark bg */
+.vigil-grid-bg {
+  background-image:
+    linear-gradient(rgba(0, 229, 200, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 229, 200, 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* right panel grid (light mode decorative) */
+.vigil-grid-bg-light {
+  background-image:
+    linear-gradient(rgba(0, 229, 200, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 229, 200, 0.06) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+@keyframes vigil-scan {
+  0% { top: -4px; }
+  100% { top: 100%; }
+}
+
+.vigil-scanline {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.vigil-scanline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 180px;
+  background: linear-gradient(transparent, rgba(0, 229, 200, 0.025), transparent);
+  animation: vigil-scan 10s linear infinite;
+}
+
+@keyframes vigil-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0, 229, 200, 0.5); }
+  50% { opacity: 0.6; box-shadow: 0 0 0 5px rgba(0, 229, 200, 0); }
+}
+.vigil-status-dot {
+  animation: vigil-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes vigil-fadein {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.vigil-fadein {
+  animation: vigil-fadein 0.35s ease forwards;
+}
+
+@keyframes view-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.view-enter {
+  animation: view-enter 0.18s ease forwards;
 }
 
 body {
   margin: 0;
   min-width: 320px;
-  background: #0d1117;
+  background: var(--bg-app);
 }
 
 button,
@@ -21,7 +122,7 @@ input {
 
 @layer components {
   .panel {
-    @apply rounded-md border border-[#30363d] bg-[#161b22]/95 shadow-panel;
+    @apply rounded-md border border-[var(--border-primary)] bg-[var(--bg-panel)] shadow-panel;
   }
 
   .section-label {
@@ -29,19 +130,19 @@ input {
   }
 
   .nav-button {
-    @apply flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm text-zinc-400 transition hover:bg-zinc-900 hover:text-zinc-100;
+    @apply flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm text-zinc-500 dark:text-zinc-400 transition hover:bg-[var(--bg-elevated)] hover:text-zinc-800 dark:hover:text-zinc-100;
   }
 
   .nav-button-active {
-    @apply border border-cyan-400/30 bg-cyan-500/15 text-cyan-100 hover:bg-cyan-500/20 hover:text-cyan-50;
+    @apply border border-cyan-400/30 bg-cyan-500/15 text-cyan-700 dark:text-cyan-100 hover:bg-cyan-500/20 hover:text-cyan-600 dark:hover:text-cyan-50;
   }
 
   .mobile-tab {
-    @apply inline-flex shrink-0 items-center gap-2 rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-400;
+    @apply inline-flex shrink-0 items-center gap-2 rounded-md border border-[var(--border-primary)] bg-[var(--bg-elevated)] px-3 py-2 text-sm text-zinc-500 dark:text-zinc-400;
   }
 
   .mobile-tab-active {
-    @apply border-zinc-200 bg-zinc-100 text-zinc-950;
+    @apply border-zinc-800 dark:border-zinc-200 bg-zinc-800 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-950;
   }
 
   .command-button {
@@ -49,15 +150,15 @@ input {
   }
 
   .command-button-disabled {
-    @apply inline-flex cursor-not-allowed items-center justify-center gap-2 rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm font-medium text-zinc-500;
+    @apply inline-flex cursor-not-allowed items-center justify-center gap-2 rounded-md border border-[var(--border-primary)] bg-[var(--bg-elevated)] px-3 py-2 text-sm font-medium text-zinc-500;
   }
 
   .icon-button {
-    @apply inline-flex h-7 w-7 items-center justify-center rounded-md text-zinc-400 transition hover:bg-zinc-800 hover:text-zinc-100;
+    @apply inline-flex h-7 w-7 items-center justify-center rounded-md text-zinc-500 dark:text-zinc-400 transition hover:bg-[var(--bg-elevated)] hover:text-zinc-800 dark:hover:text-zinc-100;
   }
 
   .reason-chip {
-    @apply inline-flex items-center rounded-md border border-zinc-700 bg-zinc-950/70 px-2.5 py-1.5 text-xs leading-5 text-zinc-300;
+    @apply inline-flex items-center rounded-md border border-[var(--border-primary)] bg-[var(--bg-subtle)] px-2.5 py-1.5 text-xs leading-5 text-zinc-600 dark:text-zinc-300;
   }
 
   .data-table {
@@ -65,10 +166,10 @@ input {
   }
 
   .data-table th {
-    @apply border-b border-zinc-800 bg-zinc-950/70 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-zinc-500;
+    @apply border-b border-[var(--border-primary)] bg-[var(--bg-elevated)] px-3 py-2 text-xs font-semibold uppercase tracking-wide text-zinc-500;
   }
 
   .data-table td {
-    @apply border-b border-zinc-800 px-3 py-3 align-top text-zinc-300;
+    @apply border-b border-[var(--border-primary)] px-3 py-3 align-top text-zinc-600 dark:text-zinc-300;
   }
 }
