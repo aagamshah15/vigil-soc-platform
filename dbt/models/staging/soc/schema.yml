@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: stg_soc_security_events
+    description: "Normalized SOC security events from SIEM, IAM, endpoint, network, vendor, threat-intel, and badge sources."
+    columns:
+      - name: event_id
+        tests: [unique, not_null]
+      - name: event_time
+        tests: [not_null]
+      - name: source_system
+        tests: [not_null]
+      - name: event_type
+        tests: [not_null]
+      - name: entity_id
+        tests: [not_null]
+      - name: action
+        tests: [not_null]
+      - name: severity
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["low", "medium", "high", "critical"]

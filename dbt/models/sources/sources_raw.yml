@@ -31,3 +31,46 @@ sources:
           - name: _kafka_offset
             tests:
               - not_null
+      - name: security_events
+        loaded_at_field: ingested_at
+        freshness:
+          warn_after: {count: 30, period: minute}
+          error_after: {count: 120, period: minute}
+        columns:
+          - name: event_id
+            tests:
+              - not_null
+              - unique
+          - name: event_time
+            tests:
+              - not_null
+          - name: source_system
+            tests:
+              - not_null
+          - name: event_type
+            tests:
+              - not_null
+          - name: entity_id
+            tests:
+              - not_null
+          - name: severity
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ["low", "medium", "high", "critical"]
+      - name: soc_assets
+      - name: soc_entities
+      - name: soc_threat_indicators
+      - name: soc_physical_access
+      - name: iocs
+        description: "Threat intelligence IOC reference data (OTX, ThreatFox, Feodo Tracker)."
+        columns:
+          - name: ioc_id
+            tests: [unique, not_null]
+          - name: ioc_type
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ["ip", "domain", "url", "md5", "sha256"]
+          - name: ioc_value
+            tests: [not_null]

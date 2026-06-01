@@ -1,0 +1,15 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: local-log
+  group_by: ["alertname", "slo"]
+  group_wait: 10s
+  group_interval: 1m
+  repeat_interval: 30m
+
+receivers:
+  - name: local-log
+    webhook_configs:
+      - url: http://alert-log:8080/alerts
+        send_resolved: true

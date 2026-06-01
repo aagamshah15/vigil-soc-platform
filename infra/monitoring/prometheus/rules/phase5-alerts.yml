@@ -1,0 +1,50 @@
+groups:
+  - name: phase5-api-and-pipeline
+    rules:
+      - alert: HighApi5xxRate
+        expr: |
+          sum(rate(threat_risk_api_requests_total{status=~"5.."}[5m]))
+          /
+          clamp_min(sum(rate(threat_risk_api_requests_total[5m])), 0.001)
+          > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          slo: api_availability
+        annotations:
+          summary: "API 5xx rate is above 5%"
+          description: "The local API error budget is burning quickly over the last 5 minutes."
+
+      - alert: ApiP95LatencyHigh
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum(rate(threat_risk_api_request_duration_seconds_bucket[5m])) by (le)
+          ) > 0.75
+        for: 5m
+        labels:
+          severity: warning
+          slo: api_latency
+        annotations:
+          summary: "API p95 latency is above 750ms"
+          description: "The Phase 5 latency SLO is breaching for local requests."
+
+      - alert: StreamIngestLagHigh
+        expr: threat_risk_stream_ingest_lag_minutes > 15
+        for: 5m
+        labels:
+          severity: warning
+          slo: stream_freshness
+        annotations:
+          summary: "Stream ingest lag is above 15 minutes"
+          description: "No recent stream rows are landing in raw.urlhaus_events."
+
+      - alert: SocCriticalIncidentActive
+        expr: threat_risk_soc_critical_incidents > 0
+        for: 1m
+        labels:
+          severity: critical
+          slo: soc_triage
+        annotations:
+          summary: "SOC critical incident is active"
+          description: "Phase 6 detected one or more critical SOC incident timelines."
