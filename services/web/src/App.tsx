@@ -1375,7 +1375,10 @@ function LoginScreen({
               className="text-2xl font-bold leading-tight"
               style={{ color: theme === "light" ? "#0f172a" : "#ffffff" }}
             >Sign in</h2>
-            <p className="text-sm mt-1" style={{ color: theme === "light" ? "#64748b" : "#a1a1aa" }}>Enter your analyst credentials to continue.</p>
+            <p className="text-sm mt-1" style={{ color: theme === "light" ? "#64748b" : "#a1a1aa" }}>
+              Enter your analyst credentials, or use{" "}
+              <span style={{ color: "#00e5c8" }}>Demo Access</span> below.
+            </p>
           </div>
 
           {/* Form */}
@@ -1391,7 +1394,7 @@ function LoginScreen({
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="analyst@soc.internal"
+                placeholder="l1@soc.internal"
                 autoComplete="username"
                 className="w-full rounded-lg border border-slate-300 dark:border-[var(--border-secondary)] bg-white dark:bg-[var(--bg-input)] px-4 py-3 text-sm text-zinc-900 dark:text-zinc-200 outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:border-[#00e5c8]/60 focus:ring-2 focus:ring-[#00e5c8]/12 transition-all"
               />
