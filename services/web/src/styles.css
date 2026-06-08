@@ -120,6 +120,35 @@ input {
   font: inherit;
 }
 
+/* Prevent OS dark-mode from inverting input/select text to white in light mode */
+.light input,
+.light textarea,
+.light select {
+  color: #0f172a;
+  -webkit-text-fill-color: #0f172a;
+}
+
+/*
+ * Global light-mode text anchor: any element that has no explicit Tailwind
+ * text-* class and relies purely on CSS inheritance will get near-black text.
+ * Elements with explicit color utilities override this via their own rule.
+ */
+html.light {
+  color: #0f172a; /* slate-900 */
+}
+
+/*
+ * text-zinc-400 (#a1a1aa) has only 2.6:1 contrast on white — fails WCAG AA.
+ * text-zinc-500 (#71717a) is borderline at 4.6:1. Both boosted in light mode.
+ * In dark mode they are fine (light on dark). No JSX changes needed.
+ */
+.light .text-zinc-400 {
+  color: #52525b; /* zinc-600, 7.2:1 on white */
+}
+.light .text-zinc-500 {
+  color: #3f3f46; /* zinc-700, 8.9:1 on white */
+}
+
 @layer components {
   .panel {
     @apply rounded-md border border-[var(--border-primary)] bg-[var(--bg-panel)] shadow-panel;

@@ -213,10 +213,10 @@ const bandColors: Record<RiskBand, string> = {
 };
 
 const bandBadgeClasses: Record<RiskBand, string> = {
-  low: "border-emerald-400/30 bg-emerald-500/15 text-emerald-200",
-  medium: "border-yellow-400/30 bg-yellow-500/15 text-yellow-100",
-  high: "border-orange-400/30 bg-orange-500/15 text-orange-200",
-  critical: "border-red-400/30 bg-red-500/15 text-red-200",
+  low:      "border-emerald-400/30 bg-emerald-500/15 text-emerald-700 dark:text-emerald-200",
+  medium:   "border-yellow-400/30 bg-yellow-500/15 text-yellow-700 dark:text-yellow-100",
+  high:     "border-orange-400/30 bg-orange-500/15 text-orange-700 dark:text-orange-200",
+  critical: "border-red-400/30 bg-red-500/15 text-red-700 dark:text-red-200",
 };
 
 const severityDotClasses: Record<RiskBand, string> = {
@@ -227,10 +227,10 @@ const severityDotClasses: Record<RiskBand, string> = {
 };
 
 const incidentStatusClasses: Record<IncidentStatus, string> = {
-  Open: "border-red-400/30 bg-red-500/15 text-red-200",
-  Investigating: "border-orange-400/30 bg-orange-500/15 text-orange-200",
-  Contained: "border-yellow-400/30 bg-yellow-500/15 text-yellow-100",
-  Resolved: "border-emerald-400/30 bg-emerald-500/15 text-emerald-200",
+  Open:         "border-red-400/30 bg-red-500/15 text-red-600 dark:text-red-200",
+  Investigating:"border-orange-400/30 bg-orange-500/15 text-orange-600 dark:text-orange-200",
+  Contained:    "border-yellow-400/30 bg-yellow-500/15 text-yellow-700 dark:text-yellow-100",
+  Resolved:     "border-emerald-400/30 bg-emerald-500/15 text-emerald-700 dark:text-emerald-200",
 };
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -920,7 +920,7 @@ function App() {
                         className={`flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-sm transition-all ${
                           activeView === item.id
                             ? "border border-[#00e5c8]/20 bg-[#00e5c8]/10 text-[#00e5c8]"
-                            : "border border-transparent text-zinc-500 hover:bg-[var(--bg-elevated)] hover:text-zinc-700 dark:hover:text-zinc-300"
+                            : "border border-transparent text-zinc-700 dark:text-zinc-500 hover:bg-[var(--bg-elevated)] hover:text-zinc-900 dark:hover:text-zinc-300"
                         }`}
                       >
                         <item.icon className="h-4 w-4 shrink-0" />
@@ -956,8 +956,8 @@ function App() {
                 {currentRole.avatar}
               </span>
               <div className="min-w-0">
-                <p className="truncate text-xs font-medium text-zinc-700 dark:text-zinc-300">{currentRole.name}</p>
-                <p className="truncate text-[10px] text-zinc-600">{currentRole.role}</p>
+                <p className="truncate text-xs font-medium text-zinc-900 dark:text-zinc-100">{currentRole.name}</p>
+                <p className="truncate text-[10px] text-zinc-700 dark:text-zinc-400">{currentRole.role}</p>
               </div>
               <button
                 type="button"
@@ -991,7 +991,7 @@ function App() {
                 )}
               </label>
               {searchMessage && (
-                <div className="absolute left-0 top-full z-30 mt-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-100">
+                <div className="absolute left-0 top-full z-30 mt-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-800 dark:text-amber-100">
                   {searchMessage}
                 </div>
               )}
@@ -1069,12 +1069,12 @@ function App() {
           {/* Content */}
           <section key={activeView} className="view-enter flex-1 overflow-y-auto px-5 py-5">
             {apiError && (
-              <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
-                {currentRole.id === "ciso" ? "Connection degraded. Briefing reflects the last known state." : `Connection lost. Showing last known state. ${apiError}`}
+              <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-800 dark:text-amber-100">
+                {currentRole.id === "ciso" ? "Connection degraded. Briefing reflects the last known state." : "Connection lost. Showing last known state."}
               </div>
             )}
             {patchError && (
-              <div className="mb-4 rounded-lg border border-orange-500/30 bg-orange-500/10 px-4 py-3 text-sm text-orange-100">
+              <div className="mb-4 rounded-lg border border-orange-500/30 bg-orange-500/10 px-4 py-3 text-sm text-orange-800 dark:text-orange-100">
                 {patchError}
               </div>
             )}
@@ -1203,6 +1203,7 @@ function LoginScreen({
   const [loginError, setLoginError] = useState<string | null>(null);
   const [loginLoading, setLoginLoading] = useState(false);
   const [showDemo, setShowDemo] = useState(false);
+  const [hoveredProfile, setHoveredProfile] = useState<string | null>(null);
 
   const handleJwtLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1340,7 +1341,7 @@ function LoginScreen({
 
       {/* ── Right panel: sign-in form ── */}
       <div
-        className="flex flex-1 flex-col items-center justify-center relative overflow-hidden px-8 py-8"
+        className="flex flex-1 flex-col items-center justify-start overflow-y-auto relative px-8 py-12"
         style={{ background: "var(--login-right-bg)" }}
       >
         {/* Decorative grid — light mode only, fades in dark */}
@@ -1385,7 +1386,7 @@ function LoginScreen({
           <form onSubmit={(e) => void handleJwtLogin(e)} className="space-y-4">
             <div>
               <label
-                className="block text-[10px] tracking-[0.2em] text-zinc-500 uppercase mb-2"
+                className="block text-[10px] tracking-[0.2em] text-zinc-600 dark:text-zinc-500 uppercase mb-2"
                 style={{ fontFamily: "'JetBrains Mono', monospace" }}
               >
                 Email
@@ -1396,13 +1397,14 @@ function LoginScreen({
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="l1@soc.internal"
                 autoComplete="username"
-                className="w-full rounded-lg border border-slate-300 dark:border-[var(--border-secondary)] bg-white dark:bg-[var(--bg-input)] px-4 py-3 text-sm text-zinc-900 dark:text-zinc-200 outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:border-[#00e5c8]/60 focus:ring-2 focus:ring-[#00e5c8]/12 transition-all"
+                className="w-full rounded-lg border border-slate-400 dark:border-[var(--border-secondary)] bg-white dark:bg-[var(--bg-input)] px-4 py-3 text-sm text-zinc-900 dark:text-zinc-200 outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-600 shadow-sm dark:shadow-none focus:border-[#00e5c8]/60 focus:ring-2 focus:ring-[#00e5c8]/12 transition-all"
+                style={theme === "light" ? { color: "#0f172a", WebkitTextFillColor: "#0f172a" } : undefined}
               />
             </div>
 
             <div>
               <label
-                className="block text-[10px] tracking-[0.2em] text-zinc-500 uppercase mb-2"
+                className="block text-[10px] tracking-[0.2em] text-zinc-600 dark:text-zinc-500 uppercase mb-2"
                 style={{ fontFamily: "'JetBrains Mono', monospace" }}
               >
                 Password
@@ -1413,7 +1415,8 @@ function LoginScreen({
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 autoComplete="current-password"
-                className="w-full rounded-lg border border-slate-300 dark:border-[var(--border-secondary)] bg-white dark:bg-[var(--bg-input)] px-4 py-3 text-sm text-zinc-900 dark:text-zinc-200 outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:border-[#00e5c8]/60 focus:ring-2 focus:ring-[#00e5c8]/12 transition-all"
+                className="w-full rounded-lg border border-slate-400 dark:border-[var(--border-secondary)] bg-white dark:bg-[var(--bg-input)] px-4 py-3 text-sm text-zinc-900 dark:text-zinc-200 outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-600 shadow-sm dark:shadow-none focus:border-[#00e5c8]/60 focus:ring-2 focus:ring-[#00e5c8]/12 transition-all"
+                style={theme === "light" ? { color: "#0f172a", WebkitTextFillColor: "#0f172a" } : undefined}
               />
             </div>
 
@@ -1429,7 +1432,7 @@ function LoginScreen({
               disabled={loginLoading || !email || !password}
               className={`mt-1 w-full rounded-lg px-4 py-3 text-sm font-semibold flex items-center justify-center gap-2 transition-all ${
                 loginLoading || !email || !password
-                  ? "cursor-not-allowed border border-slate-200 dark:border-[var(--border-secondary)] bg-white dark:bg-[var(--bg-input)] text-zinc-300 dark:text-zinc-700"
+                  ? "cursor-not-allowed border border-slate-200 dark:border-[var(--border-secondary)] bg-slate-100 dark:bg-[var(--bg-input)] text-slate-400 dark:text-zinc-700"
                   : "bg-[#00e5c8] text-[#04080f] hover:bg-[#00f0d5] active:scale-[0.99] shadow-sm"
               }`}
             >
@@ -1452,7 +1455,7 @@ function LoginScreen({
             <button
               type="button"
               onClick={() => setShowDemo((v) => !v)}
-              className="w-full flex items-center gap-3 text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors group"
+              className="w-full flex items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors group"
             >
               <div className="flex-1 h-px bg-slate-200 dark:bg-[var(--border-primary)]" />
               <span
@@ -1470,17 +1473,27 @@ function LoginScreen({
             {showDemo && (
               <div className="mt-4 space-y-1.5 vigil-fadein">
                 <p
-                  className="text-[9px] tracking-[0.3em] text-zinc-400 uppercase mb-3"
+                  className="text-[9px] tracking-[0.3em] text-zinc-500 dark:text-zinc-400 uppercase mb-3"
                   style={{ fontFamily: "'JetBrains Mono', monospace" }}
                 >
-                  Bypass JWT · Select Analyst Profile
+                  Bypass JWT · Select Demo Profile
                 </p>
-                {roleProfiles.map((profile) => (
+                {roleProfiles.map((profile) => {
+                  const isHovered = hoveredProfile === profile.id;
+                  const cardBg = theme === "light"
+                    ? (isHovered ? "#f0faf9" : "#ffffff")
+                    : (isHovered ? "#0d1826" : "var(--bg-input)");
+                  const cardBorder = isHovered ? "rgba(0,229,200,0.5)" : (theme === "light" ? "#cbd5e1" : "var(--border-subtle)");
+                  const nameColor = theme === "light" ? "#0f172a" : (isHovered ? "#f4f4f5" : "#d4d4d8");
+                  return (
                   <button
                     key={profile.id}
                     type="button"
                     onClick={() => onLogin(profile)}
-                    className="w-full flex items-center gap-3 rounded-xl border border-slate-200 dark:border-[var(--border-subtle)] bg-slate-50 dark:bg-[var(--bg-input)] px-4 py-3 text-left hover:border-[#00e5c8]/40 hover:bg-white dark:hover:bg-[var(--bg-hover)] transition-all group"
+                    onMouseEnter={() => setHoveredProfile(profile.id)}
+                    onMouseLeave={() => setHoveredProfile(null)}
+                    className="w-full flex items-center gap-3 rounded-xl border px-4 py-3 text-left shadow-sm dark:shadow-none transition-all"
+                    style={{ backgroundColor: cardBg, borderColor: cardBorder }}
                   >
                     <span
                       className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#030d1a] text-[10px] font-bold text-[#00e5c8]"
@@ -1489,14 +1502,21 @@ function LoginScreen({
                       {profile.avatar}
                     </span>
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors truncate">
+                      <p
+                        className="text-sm font-medium truncate transition-colors"
+                        style={{ color: nameColor, WebkitTextFillColor: nameColor }}
+                      >
                         {profile.name}
                       </p>
-                      <p className="text-xs text-zinc-400 truncate">{profile.role}</p>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">{profile.role}</p>
                     </div>
-                    <ChevronDown className="ml-auto h-3.5 w-3.5 -rotate-90 text-zinc-300 dark:text-zinc-700 group-hover:text-[#00e5c8] transition-colors shrink-0" />
+                    <ChevronDown
+                      className="ml-auto h-3.5 w-3.5 -rotate-90 transition-colors shrink-0"
+                      style={{ color: isHovered ? "#00e5c8" : (theme === "light" ? "#94a3b8" : "#3f3f46") }}
+                    />
                   </button>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -1541,12 +1561,34 @@ function SettingsDrawer({
   browserNotificationsEnabled: boolean;
   onBrowserNotificationsChange: (value: boolean) => void | Promise<void>;
 }) {
-  if (!open) {
-    return null;
-  }
+  const [emailFeedback, setEmailFeedback] = useState<"sent" | "no-address" | null>(null);
+
+  if (!open) return null;
+
+  // Read browser permission state at render time — updates when parent re-renders after toggle
+  const notifSupported = typeof Notification !== "undefined";
+  const notifPermission = notifSupported ? Notification.permission : "denied";
+  const notifBlocked = notifPermission === "denied";
+
+  const sendTestNotification = () => {
+    if (!notifSupported || notifPermission !== "granted") return;
+    new Notification("Vigil · Test alert", {
+      body: "Browser critical alerts are working correctly.",
+    });
+  };
+
+  const handleSendTestEmail = () => {
+    if (!alertEmail.trim()) {
+      setEmailFeedback("no-address");
+    } else {
+      setEmailFeedback("sent");
+    }
+    setTimeout(() => setEmailFeedback(null), 5000);
+  };
+
   return (
     <div className="fixed inset-0 z-40 bg-black/50" onClick={onClose}>
-      <aside className="ml-auto h-full w-full max-w-md border-l border-[var(--border-primary)] bg-[var(--bg-panel)] p-5 shadow-panel" onClick={(event) => event.stopPropagation()}>
+      <aside className="ml-auto h-full w-full max-w-md overflow-y-auto border-l border-[var(--border-primary)] bg-[var(--bg-panel)] p-5 shadow-panel" onClick={(event) => event.stopPropagation()}>
         <div className="flex items-center justify-between">
           <div>
             <p className="section-label">Settings</p>
@@ -1573,8 +1615,11 @@ function SettingsDrawer({
           <button type="button" onClick={onSave} className="command-button">Save</button>
           <button type="button" onClick={onClear} className="rounded-md border border-[var(--border-primary)] px-3 py-2 text-sm text-zinc-600 dark:text-zinc-300">Clear</button>
         </div>
+
         <div className="mt-8 border-t border-[var(--border-primary)] pt-5">
           <p className="section-label">Alert delivery</p>
+
+          {/* ── Email alert ── */}
           <label className="mt-4 block">
             <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Alert email</span>
             <div className="mt-2 flex items-center gap-2 rounded-md border border-[var(--border-primary)] bg-[var(--bg-elevated)] px-3 py-2">
@@ -1588,22 +1633,68 @@ function SettingsDrawer({
               />
             </div>
           </label>
-          <label className="mt-4 flex items-center justify-between gap-3 rounded-md border border-[var(--border-primary)] bg-[var(--bg-elevated)] px-3 py-3 text-sm text-zinc-600 dark:text-zinc-300">
-            <span>Browser critical alerts</span>
-            <input
-              type="checkbox"
-              checked={browserNotificationsEnabled}
-              onChange={(event) => void onBrowserNotificationsChange(event.target.checked)}
-              className="h-4 w-4 accent-cyan-400"
-            />
-          </label>
           <button
             type="button"
-            onClick={() => alertEmail && window.alert(`Test alert queued for ${alertEmail}`)}
-            className="mt-3 rounded-md border border-[var(--border-primary)] px-3 py-2 text-sm text-zinc-600 dark:text-zinc-300 hover:border-[var(--border-secondary)]"
+            onClick={handleSendTestEmail}
+            className="mt-3 rounded-md border border-[var(--border-primary)] px-3 py-2 text-sm text-zinc-600 dark:text-zinc-300 hover:border-[var(--border-secondary)] transition-colors"
           >
             Send test alert
           </button>
+          {emailFeedback === "sent" && (
+            <div className="mt-2 flex items-start gap-2 rounded-md border border-[#00e5c8]/20 bg-[#00e5c8]/5 px-3 py-2">
+              <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#00e5c8]" />
+              <p className="text-xs text-zinc-500 leading-snug">
+                Test alert queued for <span className="text-zinc-700 dark:text-zinc-300 font-medium">{alertEmail}</span>.{" "}
+                <span className="text-zinc-600">Email delivery requires the backend alert service to be configured.</span>
+              </p>
+            </div>
+          )}
+          {emailFeedback === "no-address" && (
+            <div className="mt-2 flex items-start gap-2 rounded-md border border-amber-500/20 bg-amber-500/5 px-3 py-2">
+              <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
+              <p className="text-xs text-amber-600 dark:text-amber-400">Enter an alert email address first.</p>
+            </div>
+          )}
+
+          {/* ── Browser notifications ── */}
+          <div className="mt-6">
+            <label className="flex items-center justify-between gap-3 rounded-md border border-[var(--border-primary)] bg-[var(--bg-elevated)] px-3 py-3">
+              <div className="min-w-0">
+                <span className="text-sm text-zinc-600 dark:text-zinc-300">Browser critical alerts</span>
+                {notifBlocked && (
+                  <p className="mt-0.5 text-xs text-amber-500 dark:text-amber-400">
+                    Blocked — allow in browser site settings to enable
+                  </p>
+                )}
+                {!notifBlocked && browserNotificationsEnabled && (
+                  <p className="mt-0.5 text-xs text-emerald-500 dark:text-emerald-400">
+                    Active — OS notifications enabled
+                  </p>
+                )}
+                {!notifBlocked && !browserNotificationsEnabled && notifPermission === "default" && (
+                  <p className="mt-0.5 text-xs text-zinc-500">
+                    Enable to receive OS-level critical alerts
+                  </p>
+                )}
+              </div>
+              <input
+                type="checkbox"
+                checked={browserNotificationsEnabled}
+                disabled={notifBlocked}
+                onChange={(event) => void onBrowserNotificationsChange(event.target.checked)}
+                className="h-4 w-4 shrink-0 accent-cyan-400 disabled:opacity-40 disabled:cursor-not-allowed"
+              />
+            </label>
+            {browserNotificationsEnabled && !notifBlocked && (
+              <button
+                type="button"
+                onClick={sendTestNotification}
+                className="mt-2 w-full rounded-md border border-[#00e5c8]/30 bg-[#00e5c8]/5 px-3 py-2 text-xs text-[#00e5c8] hover:bg-[#00e5c8]/10 transition-colors"
+              >
+                Send test notification
+              </button>
+            )}
+          </div>
         </div>
       </aside>
     </div>
@@ -1751,9 +1842,9 @@ function UserMenu({
       </button>
       <div className="my-1 border-t border-[var(--border-primary)]" />
       <button type="button" onClick={onLogout}
-        className="flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-left text-xs text-zinc-500 transition-colors hover:bg-[var(--bg-elevated)] hover:text-zinc-800 dark:hover:text-zinc-200">
+        className="flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-left text-xs text-zinc-500 transition-colors hover:bg-[var(--bg-elevated)] hover:text-red-500 dark:hover:text-red-400">
         <LogOut className="h-3.5 w-3.5" />
-        Switch profile
+        Sign out
       </button>
     </div>
   );
@@ -1772,7 +1863,7 @@ function ShortcutOverlay({ open, onClose }: { open: boolean; onClose: () => void
             <X className="h-4 w-4" />
           </button>
         </div>
-        <div className="mt-5 grid gap-3 text-sm text-zinc-700 dark:text-zinc-300">
+        <div className="mt-5 grid gap-3 text-sm text-zinc-900 dark:text-zinc-100">
           <ShortcutRow keys="1-6" label="Switch navigation views" />
           <ShortcutRow keys="R" label="Refresh now" />
           <ShortcutRow keys="/" label="Focus global search" />
@@ -1786,9 +1877,9 @@ function ShortcutOverlay({ open, onClose }: { open: boolean; onClose: () => void
 
 function ShortcutRow({ keys, label }: { keys: string; label: string }) {
   return (
-    <div className="flex items-center justify-between rounded-md border border-zinc-800 bg-[var(--bg-elevated)] px-3 py-2">
-      <span>{label}</span>
-      <kbd className="rounded border border-zinc-700 px-2 py-1 text-xs text-zinc-400">{keys}</kbd>
+    <div className="flex items-center justify-between rounded-md border border-[var(--border-secondary)] bg-[var(--bg-elevated)] px-3 py-2">
+      <span className="text-zinc-800 dark:text-zinc-200">{label}</span>
+      <kbd className="rounded border border-[var(--border-secondary)] px-2 py-1 text-xs text-zinc-700 dark:text-zinc-400">{keys}</kbd>
     </div>
   );
 }
@@ -1812,7 +1903,7 @@ function Brand({ incidentStatus }: { incidentStatus: IncidentStatus }) {
 function WsStatusBadge({ status }: { status: WsStatus }) {
   if (status === "connected") {
     return (
-      <div title="Real-time feed connected" className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-1.5 text-xs text-emerald-300">
+      <div title="Real-time feed connected" className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-1.5 text-xs text-emerald-700 dark:text-emerald-300">
         <Wifi className="h-3.5 w-3.5" />
         <span className="hidden sm:inline">Live</span>
       </div>
@@ -1820,7 +1911,7 @@ function WsStatusBadge({ status }: { status: WsStatus }) {
   }
   if (status === "connecting") {
     return (
-      <div title="Connecting to real-time feed…" className="inline-flex items-center gap-1.5 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-1.5 text-xs text-amber-300">
+      <div title="Connecting to real-time feed…" className="inline-flex items-center gap-1.5 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-1.5 text-xs text-amber-700 dark:text-amber-300">
         <RefreshCw className="h-3.5 w-3.5 animate-spin" />
         <span className="hidden sm:inline">Connecting</span>
       </div>
@@ -1886,7 +1977,7 @@ function StatusPill({
       title={wsConnected ? "Real-time WebSocket feed active" : "Polling fallback — real-time feed disconnected"}
       className={`inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs ${
         wsConnected
-          ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+          ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
           : "border-[var(--border-secondary)] bg-[var(--bg-elevated)] text-zinc-500"
       }`}
     >
@@ -2028,24 +2119,24 @@ function OverviewView({
 
       {/* Recent Incidents */}
       <div className="rounded-lg border border-[var(--border-primary)] bg-[var(--bg-panel)] px-5 py-5">
-        <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-4">Recent Incidents</h3>
+        <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Recent Incidents</h3>
         <div className="space-y-1">
           {data.incidents.slice(0, 4).map((incident) => {
             const status = incidentSeverityStatus(incident.severity);
             const borderColor = status === "Investigating" ? "#f97316" : "#ef4444";
             const statusClass = status === "Investigating"
-              ? "border-orange-400/30 bg-orange-500/10 text-orange-300"
-              : "border-red-400/30 bg-red-500/10 text-red-300";
+              ? "border-orange-400/30 bg-orange-500/10 text-orange-700 dark:text-orange-300"
+              : "border-red-400/30 bg-red-500/10 text-red-700 dark:text-red-300";
             return (
               <div
                 key={incident.incident_id}
                 className="flex items-center gap-4 rounded-r-md border-l-2 px-4 py-3 transition-colors hover:bg-[var(--bg-subtle)]"
                 style={{ borderLeftColor: borderColor }}
               >
-                <span className="w-20 shrink-0 text-xs font-semibold text-zinc-800 dark:text-zinc-200" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                <span className="w-20 shrink-0 text-xs font-semibold text-zinc-900 dark:text-zinc-100" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
                   {incident.incident_id}
                 </span>
-                <span className="w-28 shrink-0 truncate text-xs text-zinc-500">
+                <span className="w-28 shrink-0 truncate text-xs text-zinc-700 dark:text-zinc-400">
                   {incident.entities_involved[0] ?? "—"}
                 </span>
                 <span className="min-w-0 flex-1 truncate text-xs text-zinc-400">{incident.summary}</span>
@@ -2526,17 +2617,17 @@ function RiskView({
 }
 
 const ENTITY_TYPE_STYLES: Record<string, { label: string; cls: string }> = {
-  user:    { label: "USER",    cls: "bg-violet-500/20 text-violet-300 border-violet-500/30" },
-  device:  { label: "HOST",    cls: "bg-blue-500/20 text-blue-300 border-blue-500/30" },
-  vendor:  { label: "SERVICE", cls: "bg-teal-500/20 text-teal-300 border-teal-500/30" },
-  asset:   { label: "ASSET",   cls: "bg-zinc-700/40 text-zinc-400 border-zinc-600/40" },
+  user:    { label: "USER",    cls: "bg-violet-500/20 text-violet-700 dark:text-violet-300 border-violet-500/30" },
+  device:  { label: "HOST",    cls: "bg-blue-500/20 text-blue-700 dark:text-blue-300 border-blue-500/30" },
+  vendor:  { label: "SERVICE", cls: "bg-teal-500/20 text-teal-700 dark:text-teal-300 border-teal-500/30" },
+  asset:   { label: "ASSET",   cls: "bg-zinc-200/60 text-zinc-600 dark:bg-zinc-700/40 dark:text-zinc-400 border-zinc-400/40 dark:border-zinc-600/40" },
 };
 
 const BAND_PILL: Record<RiskBand, string> = {
-  critical: "bg-red-500/20 text-red-300 border-red-500/40",
-  high:     "bg-orange-500/20 text-orange-300 border-orange-500/40",
-  medium:   "bg-yellow-500/20 text-yellow-200 border-yellow-500/40",
-  low:      "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
+  critical: "bg-red-500/20 text-red-700 dark:text-red-300 border-red-500/40",
+  high:     "bg-orange-500/20 text-orange-700 dark:text-orange-300 border-orange-500/40",
+  medium:   "bg-yellow-500/20 text-yellow-700 dark:text-yellow-200 border-yellow-500/40",
+  low:      "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/40",
 };
 
 function RiskTableRow({
@@ -2556,7 +2647,7 @@ function RiskTableRow({
   isSelected?: boolean;
   onSelect?: (entity: RiskEntity) => void;
 }) {
-  const typeStyle = ENTITY_TYPE_STYLES[entity.entity_type] ?? { label: entity.entity_type.toUpperCase(), cls: "bg-zinc-700/40 text-zinc-400 border-zinc-600/40" };
+  const typeStyle = ENTITY_TYPE_STYLES[entity.entity_type] ?? { label: entity.entity_type.toUpperCase(), cls: "bg-zinc-200/60 text-zinc-600 dark:bg-zinc-700/40 dark:text-zinc-400 border-zinc-400/40 dark:border-zinc-600/40" };
 
   return (
     <div
@@ -2714,9 +2805,17 @@ function TimelineView({
   entities: RiskEntity[];
   wsStatus: WsStatus;
 }) {
-  const [selectedId, setSelectedId] = useState<string>(incidentId);
+  const [selectedId, setSelectedId] = useState<string | null>(incidentId);
+  const [actionedIds, setActionedIds] = useState<Record<string, "acknowledged" | "escalated">>({});
+  const [actionFeedback, setActionFeedback] = useState<string | null>(null);
   type TabKey = "all" | "open" | "investigating" | "resolved";
   const [tab, setTab] = useState<TabKey>("all");
+
+  const handleAction = (id: string, action: "acknowledged" | "escalated") => {
+    setActionedIds((prev) => ({ ...prev, [id]: action }));
+    setActionFeedback(action === "acknowledged" ? "Incident acknowledged" : "Incident escalated to L3");
+    setTimeout(() => setActionFeedback(null), 3000);
+  };
 
   const incidentStatus = (sev: RiskBand): "Open" | "Investigating" | "Resolved" =>
     sev === "critical" || sev === "high" ? "Investigating" : sev === "medium" ? "Open" : "Resolved";
@@ -2739,7 +2838,9 @@ function TimelineView({
     tab === "all" ? true : incidentStatus(i.severity).toLowerCase() === tab,
   );
 
-  const selected = incidents.find((i) => i.incident_id === selectedId) ?? incidents[0];
+  const selected = selectedId
+    ? (incidents.find((i) => i.incident_id === selectedId) ?? incidents[0])
+    : null;
   const selectedEntity = selected
     ? (entities.find((e) => selected.entities_involved.includes(e.entity_id)) ?? entities[0])
     : null;
@@ -2948,19 +3049,44 @@ function TimelineView({
             </div>
 
             {/* Action row */}
+            {actionFeedback && (
+              <div className="shrink-0 mx-5 mb-0 mt-2 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 px-3 py-2 text-xs font-medium text-emerald-700 dark:text-emerald-400 vigil-fadein">
+                ✓ {actionFeedback}
+              </div>
+            )}
             <div className="shrink-0 flex items-center gap-2 border-t border-[var(--border-primary)] px-5 py-3">
-              <button type="button" className="flex-1 rounded-lg bg-[#00e5c8] px-4 py-2 text-xs font-semibold text-[#04080f] transition-colors hover:bg-[#00f0d5]">
-                Acknowledge
-              </button>
-              <button type="button" className="flex-1 rounded-lg bg-red-500 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-red-400">
-                Escalate
-              </button>
+              {actionedIds[selected.incident_id] === "acknowledged" ? (
+                <div className="flex-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 px-4 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-400 text-center">
+                  ✓ Acknowledged
+                </div>
+              ) : actionedIds[selected.incident_id] === "escalated" ? null : (
+                <button
+                  type="button"
+                  onClick={() => handleAction(selected.incident_id, "acknowledged")}
+                  className="flex-1 rounded-lg bg-[#00e5c8] px-4 py-2 text-xs font-semibold text-[#04080f] transition-colors hover:bg-[#00f0d5]"
+                >
+                  Acknowledge
+                </button>
+              )}
+              {actionedIds[selected.incident_id] === "escalated" ? (
+                <div className="flex-1 rounded-lg bg-red-100 dark:bg-red-900/30 px-4 py-2 text-xs font-semibold text-red-700 dark:text-red-400 text-center">
+                  ↑ Escalated
+                </div>
+              ) : actionedIds[selected.incident_id] === "acknowledged" ? null : (
+                <button
+                  type="button"
+                  onClick={() => handleAction(selected.incident_id, "escalated")}
+                  className="flex-1 rounded-lg bg-red-500 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-red-400"
+                >
+                  Escalate
+                </button>
+              )}
               <button
                 type="button"
-                onClick={() => setSelectedId(incidentId)}
+                onClick={() => setSelectedId(null)}
                 className="rounded-lg border border-[var(--border-secondary)] px-4 py-2 text-xs font-medium text-zinc-600 transition-colors hover:text-zinc-700 dark:hover:text-zinc-300"
               >
-                Close
+                Dismiss
               </button>
             </div>
           </div>
@@ -2993,6 +3119,7 @@ function TriageView({
   completedSteps: string[];
   onToggleStep: (incidentId: string, index: number) => void;
 }) {
+  const [assignFeedback, setAssignFeedback] = useState<boolean>(false);
   const primaryEntity = entities.find((e) => data.triage.entities_involved.includes(e.entity_id)) ?? entities[0];
 
   const scoreBreakdown = primaryEntity
@@ -3086,12 +3213,24 @@ function TriageView({
               ))}
             </select>
           )}
-          <button
-            type="button"
-            className="rounded-lg bg-[#00e5c8] px-4 py-2 text-xs font-semibold text-[#04080f] hover:bg-[#00f0d5] transition-colors"
-          >
-            Assign to L2 →
-          </button>
+          {role.canAssign && (
+            assignFeedback ? (
+              <div className="rounded-lg bg-emerald-100 dark:bg-emerald-900/30 px-4 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                ✓ Assigned to L2 queue
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setAssignFeedback(true);
+                  setTimeout(() => setAssignFeedback(false), 3000);
+                }}
+                className="rounded-lg bg-[#00e5c8] px-4 py-2 text-xs font-semibold text-[#04080f] hover:bg-[#00f0d5] transition-colors"
+              >
+                Assign to L2 →
+              </button>
+            )
+          )}
         </div>
       </div>
 
@@ -3401,7 +3540,7 @@ function QnaView({ answers, templates }: { answers: QnaAnswer[]; templates: impo
                                   <span className={
                                     k === "risk_band" && typeof v === "string"
                                       ? v === "critical" ? "text-red-400" : v === "high" ? "text-orange-400" : v === "medium" ? "text-yellow-400" : "text-emerald-400"
-                                      : k === "risk_score" ? "text-orange-300" : "text-[#00e5c8]"
+                                      : k === "risk_score" ? "text-orange-600 dark:text-orange-300" : "text-[#00b5a0] dark:text-[#00e5c8]"
                                   }>
                                     {stringifyCellValue(v)}
                                   </span>
@@ -3601,10 +3740,10 @@ function ComplianceView({ frameworks, canExport }: { frameworks: ComplianceRespo
                   const status = controlStatus(control);
                   const statusStyle =
                     status === "PASS"
-                      ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+                      ? "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30"
                       : status === "FAIL"
-                        ? "bg-red-500/20 text-red-300 border-red-500/30"
-                        : "bg-yellow-500/20 text-yellow-200 border-yellow-500/30";
+                        ? "bg-red-500/20 text-red-700 dark:text-red-300 border-red-500/30"
+                        : "bg-yellow-500/20 text-yellow-700 dark:text-yellow-200 border-yellow-500/30";
                   return (
                     <div
                       key={control.control_id}
@@ -3937,9 +4076,9 @@ function MetricCard({
   tone: "red" | "orange" | "cyan";
 }) {
   const toneClass = {
-    red: "bg-red-500/15 text-red-300",
-    orange: "bg-orange-500/15 text-orange-300",
-    cyan: "bg-cyan-500/15 text-cyan-300",
+    red: "bg-red-500/15 text-red-700 dark:text-red-300",
+    orange: "bg-orange-500/15 text-orange-700 dark:text-orange-300",
+    cyan: "bg-cyan-500/15 text-cyan-700 dark:text-cyan-300",
   }[tone];
   return (
     <div className="rounded-md border border-zinc-800 bg-[var(--bg-elevated)] p-4">

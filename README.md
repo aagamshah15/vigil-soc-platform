@@ -5,7 +5,7 @@
 [![CI](https://github.com/aagamshah15/threat-risk-analytics-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/aagamshah15/threat-risk-analytics-platform/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-![Vigil SOC Command Center](docs/screenshots/react-soc-command-center.png)
+![Vigil SOC Command Center — dark mode](docs/screenshots/react-soc-command-center.png)
 
 ---
 
@@ -88,6 +88,9 @@ Threat data flows through five stages:
 <details>
 <summary>More screenshots</summary>
 
+![Login screen — dark mode](docs/screenshots/login-dark.png)
+![Login screen — light mode](docs/screenshots/login-light.png)
+![Vigil SOC Command Center — light mode](docs/screenshots/react-soc-command-center-light.png)
 ![Grafana SLO Dashboard](docs/screenshots/grafana-slo-dashboard.png)
 ![FastAPI OpenAPI Docs](docs/screenshots/fastapi-openapi.png)
 ![Redpanda Topics](docs/screenshots/redpanda-topics.png)
