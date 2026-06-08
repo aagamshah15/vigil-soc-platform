@@ -2,7 +2,7 @@
 
 **Production-style threat intelligence and security operations platform, built on a full data engineering stack.**
 
-[![CI](https://github.com/aagamshah15/threat-risk-analytics-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/aagamshah15/threat-risk-analytics-platform/actions/workflows/ci.yml)
+[![CI](https://github.com/aagamshah15/vigil-soc-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/aagamshah15/vigil-soc-platform/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ![Vigil SOC Command Center — dark mode](docs/screenshots/react-soc-command-center.png)
